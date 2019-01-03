@@ -1,7 +1,12 @@
 ---
 title: pcntl-2
 date: 2018-12-31 16:55:00
-tags: PCNTL
+categories:
+ - php
+ - pcntl
+tags: 
+ - php
+ - pcntl
 ---
 
 ----------

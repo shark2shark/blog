@@ -1,7 +1,12 @@
 ---
 title: pcntl-1
 date: 2018-12-24 02:20:00
-tags: PCNTL
+categories:
+ - php
+ - pcntl
+tags: 
+ - php
+ - pcntl
 ---
 
 **pcntl_fork()**
