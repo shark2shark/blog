@@ -13,7 +13,7 @@ tags: PCNTL
 	1. 注册对应信号处理函数
 	2. 忽律该信号
 	3. 保留信号默认行为
-	
+---
 - **PHP中的信号处理函数**
 	1. pcntl_alarm(int $seconds) :int $return
 		- **解释** 创建一个计时器，在指定的秒数后向进程发送一个SIGALRM信号
@@ -74,116 +74,118 @@ tags: PCNTL
 		- **参数** 前两参数跟pcntl_sigwaitinfo一致，$seconds设置等待秒数， $nanoseconds设置等待纳秒数
 		- **返回** $return 成功时返回等待到的信号，超时返回-1
 		- **说明** 带超时机制的pcntl_sigwaitinfo,可视为它的升级版
- -  **PHP中的信号处理方式**
-	 1. 传统ticks方式
-		 - 所需关键字
-			 1. declare
-			 2. ticks
-		 - 关键字解释
-			1. **declare解释** directive也是PHP代码结构的一种，directive 部分允许设定 declare 代码段的行为。目前只认识两个指令：ticks以及 encoding(忽略，不在本章讨论范围)；declare 代码段中的 statement 部分将被执行——怎样执行以及执行中有什么副作用出现取决于 directive 中设定的指令；declare 结构也可用于全局范围，影响到其后的所有代码(但如果有 declare 结构的文件被其它文件包含，则对包含它的父文件不起作用)，directive结构如下:
-			
-			``` php
-				declare (directive)
-					statement
-			```
-			2. **ticks解释** ticks是directive支持的两个指令中的一个，ticks表示在directive代码段中每执行N条**低级语句(不包含条件表达式和参数表达式)**，就会触发register_tick_function()注册的ticks事件（pcntl_sigmal()注册的函数也会被触发），可能有点懵，看代码吧
-			
-			3. 代码示例
-				 ```php
-					 //注册ticks函数
-					register_tick_function(function () {
-						var_dump('ticks函数触发');
-					});
+---
+		
+-  **PHP中的信号处理方式**
+ 1. 传统ticks方式
+	 - 所需关键字
+		 1. declare
+		 2. ticks
+	 - 关键字解释
+		1. **declare解释** directive也是PHP代码结构的一种，directive 部分允许设定 declare 代码段的行为。目前只认识两个指令：ticks以及 encoding(忽略，不在本章讨论范围)；declare 代码段中的 statement 部分将被执行——怎样执行以及执行中有什么副作用出现取决于 directive 中设定的指令；declare 结构也可用于全局范围，影响到其后的所有代码(但如果有 declare 结构的文件被其它文件包含，则对包含它的父文件不起作用)，directive结构如下:
 
-					---
+		``` php
+			declare (directive)
+				statement
+		```
+		2. **ticks解释** ticks是directive支持的两个指令中的一个，ticks表示在directive代码段中每执行N条**低级语句(不包含条件表达式和参数表达式)**，就会触发register_tick_function()注册的ticks事件（pcntl_sigmal()注册的函数也会被触发），可能有点懵，看代码吧
 
-					//ticks = 1 表示declare的大括号中每执行1条语句
-					declare(ticks = 1) {
-						$c = 0;
-						//此处ticks计算一次
-						while ($c) {
-							$c --;
-							//此处根据循环执行次数计算ticks（当前代码是0次）
-						}
-						//此处ticks计算一次
-					}
-
-					//执行输出如下
-					php run.php 
-					//string(17) "ticks函数触发"
-					//string(17) "ticks函数触发"
-
-					---
-
-					//将$c改为2
-					declare(ticks = 1) {
-						$c = 2;
-						//此处ticks计算1次
-						while ($c) {
-							$c --;
-							//此处计算2次
-						}
-						//此处ticks计算1次
-					}
-
-					//执行输出如下
-					php run.php 
-					//string(17) "ticks函数触发"
-					//string(17) "ticks函数触发"
-					//string(17) "ticks函数触发"
-					//string(17) "ticks函数触发"
-				 ```
-			4. 对declare如果还是有疑问，[可翻阅官方文档][2]
-		- ticks形式的信号处理方式
-			1. 基本原理：用pnctl_signal注册需要处理的信号和其对应的处理函数，进程运行期间每处理制定行数的代码，就去查看有没有注册的信号，有就执行处理函数，没有就继续跑，下面是一个ctrl+c杀不掉的死循环代码示例，信号检测就是通过ticks实现
-			```php
-				pcntl_signal(SIGINT, function () {
-					var_dump('接收到了CTRL+C');
+		3. 代码示例
+			 ```php
+				 //注册ticks函数
+				register_tick_function(function () {
+					var_dump('ticks函数触发');
 				});
 
-				declare(ticks = 1)
-					while (true) {
-						sleep(2);
+				---
+
+				//ticks = 1 表示declare的大括号中每执行1条语句
+				declare(ticks = 1) {
+					$c = 0;
+					//此处ticks计算一次
+					while ($c) {
+						$c --;
+						//此处根据循环执行次数计算ticks（当前代码是0次）
 					}
-			
-				//终端ctrl+c输出如下
-				//^Cstring(18) "接收到了CTRL+C"
-			```
-			2. 说明: 实际上用ticks是非常古老的处理方式，而且在程序运行期间大部分时间都是没有信号的，就好比ajax轮训一样，这样的处理方式效率是很低下的，不推荐这种方式
+					//此处ticks计算一次
+				}
 
-	2. pcntl_signal_dispatch主动处理
-		- 介绍: 由于ticks方式效率的低下, php5.3版本后加入了pcntl_signal_dispatch函数，目的是信号检测由开发者自己处理，这样可以显著的提升效率，但同时开发者需要更加细心去处理,用pcntl_signal_dispatch实现上个例子
+				//执行输出如下
+				php run.php 
+				//string(17) "ticks函数触发"
+				//string(17) "ticks函数触发"
+
+				---
+
+				//将$c改为2
+				declare(ticks = 1) {
+					$c = 2;
+					//此处ticks计算1次
+					while ($c) {
+						$c --;
+						//此处计算2次
+					}
+					//此处ticks计算1次
+				}
+
+				//执行输出如下
+				php run.php 
+				//string(17) "ticks函数触发"
+				//string(17) "ticks函数触发"
+				//string(17) "ticks函数触发"
+				//string(17) "ticks函数触发"
+			 ```
+		4. 对declare如果还是有疑问，[可翻阅官方文档][2]
+	- ticks形式的信号处理方式
+		1. 基本原理：用pnctl_signal注册需要处理的信号和其对应的处理函数，进程运行期间每处理制定行数的代码，就去查看有没有注册的信号，有就执行处理函数，没有就继续跑，下面是一个ctrl+c杀不掉的死循环代码示例，信号检测就是通过ticks实现
 		```php
 			pcntl_signal(SIGINT, function () {
 				var_dump('接收到了CTRL+C');
 			});
 
-			while (true) {
-				sleep(2);
-				//主动检测
-				pcntl_signal_dispatch();
-			}
+			declare(ticks = 1)
+				while (true) {
+					sleep(2);
+				}
 
+			//终端ctrl+c输出如下
+			//^Cstring(18) "接收到了CTRL+C"
 		```
-		- 说明: pcntl_signal_dispatch虽然提高了信号检测的效率，但是却增加了开发者开发的负担，如果php版本>=7.1,那么这种方式也不推荐
-	3. pcntl_async_signals异步信号处理
-		- 介绍:不论是ticks还是pcntl_signal_dispatch，其处理方式都是阻塞的，他们都依赖信号检测的上一句代码稳妥的运行完毕，但是如果遇到这样一个情况，比如说，有时候网络突然卡死了，或者是写入或者读取一个很大的文件，那这种情况一般需要较长的时间，而这段时间里正好有信号产生了，由于ticks和pcntl_signal_dispatch都是语句执行后处理信号而无法在语句执行中处理信号，那这样就会对这个信号的处理造成很大程度的延时，介于这种情况php7.1后加入了pcntl_async_signals，用pcntl_async_signals实现上个例子
-		
-		```php
-			pcntl_signal(SIGINT, function () {
-				var_dump('接收到了CTRL+C');
-			});
+		2. 说明: 实际上用ticks是非常古老的处理方式，而且在程序运行期间大部分时间都是没有信号的，就好比ajax轮训一样，这样的处理方式效率是很低下的，不推荐这种方式
 
-			pcntl_async_signals(true);
+2. pcntl_signal_dispatch主动处理
+	- 介绍: 由于ticks方式效率的低下, php5.3版本后加入了pcntl_signal_dispatch函数，目的是信号检测由开发者自己处理，这样可以显著的提升效率，但同时开发者需要更加细心去处理,用pcntl_signal_dispatch实现上个例子
+	```php
+		pcntl_signal(SIGINT, function () {
+			var_dump('接收到了CTRL+C');
+		});
 
-			while (true) {
-				sleep(2);
-			}
+		while (true) {
+			sleep(2);
+			//主动检测
+			pcntl_signal_dispatch();
+		}
 
-		```
-		
-		- 说明：如果php版本大于7.1，强烈推荐pcntl_async_signals这种方式，相比前两种来说这是目前最完美的信号检测方式
-		
+	```
+	- 说明: pcntl_signal_dispatch虽然提高了信号检测的效率，但是却增加了开发者开发的负担，如果php版本>=7.1,那么这种方式也不推荐
+3. pcntl_async_signals异步信号处理
+	- 介绍:不论是ticks还是pcntl_signal_dispatch，其处理方式都是阻塞的，他们都依赖信号检测的上一句代码稳妥的运行完毕，但是如果遇到这样一个情况，比如说，有时候网络突然卡死了，或者是写入或者读取一个很大的文件，那这种情况一般需要较长的时间，而这段时间里正好有信号产生了，由于ticks和pcntl_signal_dispatch都是语句执行后处理信号而无法在语句执行中处理信号，那这样就会对这个信号的处理造成很大程度的延时，介于这种情况php7.1后加入了pcntl_async_signals，用pcntl_async_signals实现上个例子
+
+	```php
+		pcntl_signal(SIGINT, function () {
+			var_dump('接收到了CTRL+C');
+		});
+
+		pcntl_async_signals(true);
+
+		while (true) {
+			sleep(2);
+		}
+
+	```
+
+	- 说明：如果php版本大于7.1，强烈推荐pcntl_async_signals这种方式，相比前两种来说这是目前最完美的信号检测方式
+
 
 
 ----------
