@@ -1,6 +1,10 @@
 ---
 title: pcntl-2
 date: 2018-12-31 16:55:00
+description: php中pcntl基础
+keywords:
+ - php
+ - pcntl
 categories:
  - php
  - pcntl
@@ -8,8 +12,6 @@ tags:
  - php
  - pcntl
 ---
-
-----------
 
  - **信号**
 		

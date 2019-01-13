@@ -1,6 +1,10 @@
 ---
 title: pcntl-1
 date: 2018-12-24 02:20:00
+description: php中pcntl基础
+keywords:
+ - php
+ - pcntl
 categories:
  - php
  - pcntl
