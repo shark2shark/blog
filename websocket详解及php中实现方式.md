@@ -50,9 +50,10 @@ tags:
 	- websocket是怎么依赖http的
 		  上面分析了创建websocket的http请求和响应过程,这个过程就是websocket协议的握手环节,其中请求头Sec-WebSocket-Key和响应头Sec-WebSocket-Accept是一对,怎么说呢,在浏览器中请求头Sec-WebSocket-Key是一个随机字符串(KEY),发送到服务器后服务器用KEY+固定字符串"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"用sha1加密后再用base64编码,在php中如下:
 
-``` stylus
- 		$acceptWsKey = base64_encode(sha1($wsKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
-```
+
+		``` stylus
+				$acceptWsKey = base64_encode(sha1($wsKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
+		```
 
 
 - **php中websocket的实现方式**
