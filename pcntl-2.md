@@ -1,7 +1,7 @@
 ---
 title: pcntl-2
 date: 2018-12-31 16:55:00
-description: php中pcntl基础
+description: 什么是信号?php在多进程中信号是如何处理的?php中信号处理应该注意什么
 keywords:
  - php
  - pcntl
