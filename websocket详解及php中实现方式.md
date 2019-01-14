@@ -48,17 +48,173 @@ tags:
 		  响应头包含: Sec-WebSocket-Accept: qVby4apnn2tTYtB1nPPVYUn68gY= 告知客户端即将升级的协议key加密后的值并要求客户端确认,如果确认成功,那么websocket协议就建立成功了,否则失败
 		  
 	- websocket是怎么依赖http的
-		  上面分析了创建websocket的http请求和响应过程,这个过程就是websocket协议的握手环节,其中请求头Sec-WebSocket-Key和响应头Sec-WebSocket-Accept是一对,怎么说呢,在浏览器中请求头Sec-WebSocket-Key是一个随机字符串(KEY),发送到服务器后服务器用KEY+固定字符串"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"用sha1加密后再用base64编码,在php中如下:
 
-		```$acceptWsKey = base64_encode(sha1($wsKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));```
+		上面分析了创建websocket的http请求和响应过程,这个过程就是websocket协议的握手环节,其中请求头Sec-WebSocket-Key和响应头Sec-WebSocket-Accept是一对,怎么说呢,在浏览器中请求头Sec-WebSocket-Key是一个随机字符串(KEY),发送到服务器后服务器用KEY+固定字符串"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"用sha1加密后再用base64编码,在php中如下:
+
+		```php
+		$acceptWsKey = base64_encode(sha1($wsKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
+		```
 
 
 - **php中websocket的实现方式**
 	
-	(待更新...)
-
 	- socket函数族
+		- socket_create( int $domain , int $type , int $protocol ): resource $return
+			- 函数作用:创建一个socket资源并返回
+			- 参数:
+				- $domain    制定哪种网络协议
+				
+|  可选项   |  解释   |
+| --- | --- |
+|  AF_INET   |  IPv4 网络协议。TCP 和 UDP 都可使用此协议    |
+|  AF_INET6   | IPv6 网络协议。TCP 和 UDP 都可使用此协议    |
+|  AF_UNIX   | 本地通讯协议。具有高性能和低成本的 IPC（进程间通讯）    |
+		
+			-  $type    参数用于选择套接字使用的类型。
+						
+		- socket_set_option
+		- socket_build
+		- socket_listen
+		- socket_select
+		- socket_accept
+		
+- 代码示例
 
-	- 代码示例
+		``` php
+		//监听地址
+		$address = '0.0.0.0';
+
+		//监听端口
+		$port = '8081';
+
+		//定义一个sockets的数据，用来存放所有socket，包括服务端，用来给socket_select使用
+		$sockets = [];
+
+		//创建socket
+		$server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+		//端口复用，防止服务重启前绑定的端口还未释放导致的无法重新启动服务
+		socket_set_option($server, SOL_SOCKET, SO_REUSEADDR, 1);
+
+		//绑定地址和端口
+		socket_bind($server, $address, $port);
+
+		//开始监听
+		socket_listen($server, 10);
+
+		//将主服务socket压入sockets数组
+		array_push($sockets, $server);
+
+		//socket_select 第二个参数  空数组即可，详情看文档
+		$selectWrite = [];
+
+		//定义一个数组用于存放所有握手成功的socket
+		$handShake = [];
+
+		//socket_select 第三个参数   为Null即可，详情看文档
+		$except = null;
+
+		//轮训检测
+		while (true) {
+
+			//socket_select第一个参数，引用一个sockets数组并将不活动的socket删除，因为引用的原因，此处应该每轮循环都重新赋值
+			$tempSelectRead = $sockets;
+
+			//同上
+			$tempSelectWrite = $selectWrite;
+
+			$selectResult = socket_select($tempSelectRead, $tempSelectWrite, $except, null);
+
+			//socket_select如果兼听不到活跃的socket会返回false，因此到这直接跳过本轮循环进入下一轮
+			if (!$selectResult) continue;
+
+			//此时tempSelectRead中的socket就是当前活动的socket，将其循环处理
+			foreach ($tempSelectRead as $socket) {
+
+				//首先判断当前socket是不是主服务，如果是主服务那就处理链接请求
+				if ($socket == $server) {
+					//等待接受一个链接
+					$client = socket_accept($socket);
+
+					if ($client) {
+						//此时得到的client就是一个新的客户端的socket，将其也放入全部sockets数组中
+						array_push($sockets, $client);
+
+						var_dump('新链接' . array_search($client, $sockets) . '已创建');
+
+					}
+
+				} else {
+
+					//不是主服务的话就是客户端了,二话不说先把数据接受了，此处注意，只有没有握手时（也就是http部分传递的不是二进制数据，可以直接使用，一旦握手成功后续接受的到所有数据都是二进制需要解码处理）
+					$buff = socket_read($socket, 1024);
+
+					//如果没有收到消息,说明客户端主动关闭了,用socket_read函数，客户端关闭后收到的是一个空字符串(实际上socket关闭后服务端收到的是一个7字节长度的数据)
+					if ($buff === '') {
+
+						var_dump('客户端' . array_search($socket, $sockets) . '主动关闭');
+
+						//将关闭的客户端从sockets数组中删除
+						unset($sockets[array_search($socket, $sockets)]);
+
+						//如果握手成功的话 那把他从握手数组中也删了
+						if (isset($socket, $handShake))
+							unset($handShake[array_search($socket, $handShake)]);
+
+						//关闭这个客户端
+						socket_close($socket);
+
+					} else {
+
+						//如果客户端没有关闭，首先应该判断的是这个链接是否握手成功,如果没有握过手,先握手
+						if (!in_array($socket, $handShake)) {
+
+							//得到http请求头中升级ws协议的key
+							if (!preg_match("/Sec\-WebSocket\-Key:\s(.*)\r\n/", $buff, $result)) throw new Exception('未获取到协议升级KEY');
+
+							$wsKey = $result[1];
+
+							//编码key 编码方式: 请求头Sec-WebSocket-Key的值 + 固定字符串"258EAFA5-E914-47DA-95CA-C5AB0DC85B11" sha1进行hash后base64编码
+							$acceptWsKey = base64_encode(sha1($wsKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
+
+							//组合响应头, 组合时\r\n用PHP_EOL替代或者\r\n写在双引号中,单引号\r\n就是一个字符串，在夸系统传递中会造成握手不成功的问题
+							$responseHttpHeader = 'HTTP/1.1 101 Switching Protocols' . PHP_EOL;
+
+							$responseHttpHeader .= 'Upgrade: websocket' . PHP_EOL;
+
+							$responseHttpHeader .= 'Connection: Upgrade' . PHP_EOL;
+
+							//此处注意，ws握手响应要求最后一行多拼写一个/r/n
+							$responseHttpHeader .= 'Sec-WebSocket-Accept: ' . $acceptWsKey . PHP_EOL . PHP_EOL;
+
+							//输出相应供客户端完成握手
+							socket_write($socket, $responseHttpHeader, strlen($responseHttpHeader));
+
+							//标记该客户端是握手状态
+							array_push($handShake, $socket);
+
+							var_dump('新连接' . array_search($socket, $sockets) . '握手成功');
+
+						} else {
+							//如果握手成功，则在此处处理数据逻辑,此处所有收到的数据要进行二进制解码输出的数据要用二进制编码
+
+							//解码数据
+							$message = getMsg($buff);
+
+							var_dump($message);
+
+							//编码输出
+							$returnMessage = buildMsg($message);
+
+							socket_write($socket, $returnMessage, strlen($returnMessage));
+						}
+					}
+				}
+			}
+		}
+
+		```
+
+	
 
   [1]: https://www.zhihu.com/question/20215561
