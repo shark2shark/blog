@@ -98,15 +98,17 @@ tags:
 				- $tv_usec超时时间微妙(可与上一个参数配合使用)
 			- 返回值: $return 成功是返回检测到的活动的socket总数,超时返回0,出错返回false
 			- 说明: 运用socket_select 可以实现多个socket同时监听,可以实现多socket一起链接
+			
+			
 		- socket_set_option( resource $socket , int $level , int $optname , mixed $optval ): bool $return
-				- 函数作用: 设置socket选项
-				- 参数
-					- $socket 合法的socket资源
-					- $level 制定选项所在的协议级别
-					- $optname 选型名称
-					- $optva 选项值
-				- 返回值: $return 成功与否 true|false
-				- 说明: 就是设置socket选项啦,详情见[官网文档][3]
+			- 函数作用: 设置socket选项
+			- 参数
+				- $socket 合法的socket资源
+				- $level 制定选项所在的协议级别
+				- $optname 选型名称
+				- $optva 选项值
+			- 返回值: $return 成功与否 true|false
+			- 说明: 就是设置socket选项啦,详情见[官网文档][3]
 - 代码示例
 	```php
 		//监听地址
