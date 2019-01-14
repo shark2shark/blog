@@ -5,7 +5,7 @@ keywords:
  - php
  - socket
  - websocket
-description: websocket是什么?websocket的创建过程是怎样的?在php中websocket服务应该怎么创建
+description: websocket是什么?websocket的链接过程是怎样的?在php中websocket服务应该怎么创建?
 categories:
  - php
  - socket
