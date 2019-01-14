@@ -97,9 +97,7 @@ tags:
 				- $tv_sec 超时时间秒 (可与下一个参数配合使用),如果为null理解返回
 				- $tv_usec超时时间微妙(可与上一个参数配合使用)
 			- 返回值: $return 成功是返回检测到的活动的socket总数,超时返回0,出错返回false
-			- 说明: 运用socket_select 可以实现多个socket同时监听,可以实现多socket一起链接
-			
-			
+			- 说明: 运用socket_select 可以实现多个socket同时监听,可以实现多socket一起链接	
 		- socket_set_option( resource $socket , int $level , int $optname , mixed $optval ): bool $return
 			- 函数作用: 设置socket选项
 			- 参数
