@@ -197,7 +197,7 @@ tags:
 
 ----------
 
-> 到此，PCNTL扩展基础分享就此结束，如有不妥之处，敬请留言回复以便更正，防止误导他人；漫漫码路，与君共勉！
+> 如有不妥之处，敬请留言回复以便更正，防止误导他人；漫漫码路，与君共勉！转载请注明
 
   [1]: https://bugs.php.net/bug.php?id=52121
   [2]: http://www.php.net/manual/zh/control-structures.declare.php[root@izwz960p8wbkrjww8a18i6z 

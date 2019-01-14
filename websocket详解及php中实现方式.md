@@ -62,25 +62,53 @@ tags:
 		- socket_create( int $domain , int $type , int $protocol ): resource $return
 			- 函数作用:创建一个socket资源并返回
 			- 参数:
-				- $domain    制定哪种网络协议
-				
-|  可选项   |  解释   |
-| --- | --- |
-|  AF_INET   |  IPv4 网络协议。TCP 和 UDP 都可使用此协议    |
-|  AF_INET6   | IPv6 网络协议。TCP 和 UDP 都可使用此协议    |
-|  AF_UNIX   | 本地通讯协议。具有高性能和低成本的 IPC（进程间通讯）    |
-		
-			-  $type    参数用于选择套接字使用的类型。
-						
-		- socket_set_option
-		- socket_build
-		- socket_listen
-		- socket_select
-		- socket_accept
-		
+				- $domain    指定哪种网络协议,选项如下,[详细选项][2]
+			 	- $type    参数用于选择套接字使用的类型,[详细选项][2]
+			 	- $protocol 指定 domain 套接字下的具体协议,如tcp,[详细选项][2]
+		   - 返回值: $return 返回一个创建的socket资源
+		   - 说明:该函数创建一个新的可操作的socket资源并返回
+		- socket_build(resource $socket , string $address [, int $port = 0 ]): bool $return
+			- 函数作用: 给socket绑定地址
+			- 参数: 
+				- $socket 有socket_create返回的合法socket资源
+				- $address 需要给套接字绑定的资源,如果套接字是 AF_INET 族，那么 address 必须是一个四点分法的 IP 地址（例如 127.0.0.1,如果套接字是 AF_UNIX 族，那么 address 是 Unix 套接字一部分（例如 /tmp/my.sock ）
+				- $port 绑定的端口号,仅在AF_INET族生效
+			- 返回值: $return 成功|失败 true|false
+			- 说明:该函数作用是为socket绑定需要监听的地址
+		- socket_listen( resource $socket [, int $backlog = 0 ]): bool $return
+			- 函数作用:开始监听socket上绑定的链接
+			- 参数:
+				- $socket 需要监听的socket
+				- $backlog 链接队列大小,如果连接请求到达时队列已满，则客户端可能会收到一个指示econnnrejected的错误，或者，如果基础协议支持重新传输，则可以忽略该请求，以便重试成功。
+			- 返回值: $return 成功|失败 true|false
+			- 说明:就是开始用绑定地址监听socket啦
+		- socket_accept( resource $socket ): resource $return
+			- 函数作用: 阻塞等待socket接受链接
+			- 参数
+				- $socket 等待接受的socket资源
+			- 返回值: $return 新连接的socket资源(客户端)
+			- 说明: 该函数一直阻塞等待,知道socket有新链接为止
+		- socket_select( array &$read , array &$write , array &$except , int $tv_sec [, int $tv_usec = 0 ] ) :int|bool $return
+			- 函数作用: 对给定的socket数组以制定时间运行select()系统调用来检查socket的活动状态
+			- 参数:
+				- $read 引用传递, 要检测的socket数组传入后将没有活动的socket删除,只剩下活动的socket链接
+				- $write 引用传递, 检查$read数组中的socket是否可写
+				- $except 引用传递 检查$read数组中的socket是否异常
+				- $tv_sec 超时时间秒 (可与下一个参数配合使用),如果为null理解返回
+				- $tv_usec超时时间微妙(可与上一个参数配合使用)
+			- 返回值: $return 成功是返回检测到的活动的socket总数,超时返回0,出错返回false
+			- 说明: 运用socket_select 可以实现多个socket同时监听,可以实现多socket一起链接
+		- socket_set_option( resource $socket , int $level , int $optname , mixed $optval ): bool $return
+				- 函数作用: 设置socket选项
+				- 参数
+					- $socket 合法的socket资源
+					- $level 制定选项所在的协议级别
+					- $optname 选型名称
+					- $optva 选项值
+				- 返回值: $return 成功与否 true|false
+				- 说明: 就是设置socket选项啦,详情见[官网文档][3]
 - 代码示例
-
-		``` php
+	```php
 		//监听地址
 		$address = '0.0.0.0';
 
@@ -90,7 +118,7 @@ tags:
 		//定义一个sockets的数据，用来存放所有socket，包括服务端，用来给socket_select使用
 		$sockets = [];
 
-		//创建socket
+		//创建socket(第一个参数表示ipv4网络协议,第二个参数表示提供一个顺序化的、可靠的、全双工的、基于连接的字节流,第三个参数表示创建的具体协议是tcp)
 		$server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
 		//端口复用，防止服务重启前绑定的端口还未释放导致的无法重新启动服务
@@ -125,7 +153,7 @@ tags:
 
 			$selectResult = socket_select($tempSelectRead, $tempSelectWrite, $except, null);
 
-			//socket_select如果兼听不到活跃的socket会返回false，因此到这直接跳过本轮循环进入下一轮
+			//socket_select如果兼听不到活跃的socket或出错会返回0|false，因此到这直接跳过本轮循环进入下一轮
 			if (!$selectResult) continue;
 
 			//此时tempSelectRead中的socket就是当前活动的socket，将其循环处理
@@ -212,9 +240,13 @@ tags:
 				}
 			}
 		}
+	```
 
-		```
+----------
 
-	
+> 如有不妥之处，敬请留言回复以便更正，防止误导他人；漫漫码路，与君共勉！转载请注明
+
 
   [1]: https://www.zhihu.com/question/20215561
+  [2]: http://www.php.net/manual/zh/function.socket-create.php
+  [3]: http://php.net/manual/zh/function.socket-set-option.php
