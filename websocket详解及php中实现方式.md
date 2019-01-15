@@ -1,17 +1,18 @@
 ---
 title: websocket详解及php中实现方式
-date: 2019-01-13 21:29
+date: '2019-01-13 21:29'
 keywords:
- - php
- - socket
- - websocket
+  - php
+  - socket
+  - websocket
 description: websocket是什么?websocket的链接过程是怎样的?在php中websocket服务应该怎么创建?
 categories:
- - php
- - socket
-tags: 
- - php
- - socket
+  - php
+  - socket
+tags:
+  - php
+  - socket
+abbrlink: 4475
 ---
 
 - **websocket是什么**

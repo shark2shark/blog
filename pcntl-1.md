@@ -1,16 +1,17 @@
 ---
 title: pcntl-1
-date: 2018-12-24 02:20:00
 description: php多进程中最重要的两个函数pcntl_fork和pcntl_wait详细解释
-keywords: 
- - php
- - pcntl
+keywords:
+  - php
+  - pcntl
 categories:
- - php
- - pcntl
-tags: 
- - php
- - pcntl
+  - php
+  - pcntl
+tags:
+  - php
+  - pcntl
+abbrlink: d02e4d7
+date: 2018-12-24 02:20:00
 ---
 
 **pcntl_fork()**
