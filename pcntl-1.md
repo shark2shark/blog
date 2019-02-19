@@ -1,16 +1,17 @@
 ---
 title: pcntl-1
-date: 2018-12-24 02:20:00
 description: php多进程中最重要的两个函数pcntl_fork和pcntl_wait详细解释
-keywords: 
- - php
- - pcntl
+keywords:
+  - php
+  - pcntl
 categories:
- - php
- - pcntl
-tags: 
- - php
- - pcntl
+  - php
+  - pcntl
+tags:
+  - php
+  - pcntl
+abbrlink: d02e4d7
+date: 2018-12-24 02:20:00
 ---
 
 **pcntl_fork()**
@@ -26,7 +27,7 @@ tags:
 
 - 提示
 	创建的子进程完完整整复制父进程的堆栈资源，相当于父进程的一个独立副本，然后父子进程都从父进程fork的地方继续向下执行代码；所以，如果父进程是循环创建的子进程, 那么子进程执行完毕不退出的话也会继续执行父进程剩下的循环（pcntl_fork()调用后剩下的循环），也就是说子进程又会创建子进程，所以，如果希望子进程只处理特殊任务（如发送邮件），那么子进程执行完毕后应该主动退出）
-	
+		
 - 代码示例
 	
 

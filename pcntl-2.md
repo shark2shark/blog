@@ -1,16 +1,17 @@
 ---
 title: pcntl-2
-date: 2018-12-31 16:55:00
 description: 什么是信号?php在多进程中信号是如何处理的?php中信号处理应该注意什么
 keywords:
- - php
- - pcntl
+  - php
+  - pcntl
 categories:
- - php
- - pcntl
-tags: 
- - php
- - pcntl
+  - php
+  - pcntl
+tags:
+  - php
+  - pcntl
+abbrlink: 940bb56d
+date: 2018-12-31 16:55:00
 ---
 
  - **信号**
@@ -20,6 +21,8 @@ tags:
 	1. 注册对应信号处理函数
 	2. 忽律该信号
 	3. 保留信号默认行为
+
+
 ---
 - **PHP中的信号处理函数**
 	1. pcntl_alarm(int $seconds) :int $return
