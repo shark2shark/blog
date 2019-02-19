@@ -1,17 +1,18 @@
 ---
 title: spl-ArrayObject
-date: 2019-01-13 21:29
+date: '2019-02-19 23:00'
 keywords:
- - php
- - spl
- - ArrayObject
+  - php
+  - spl
+  - ArrayObject
 description: php标准库SPL之ArrayObject
 categories:
- - php
- - spl
-tags: 
- - php
- - spl
+  - php
+  - spl
+tags:
+  - php
+  - spl
+abbrlink: 7817fbb9
 ---
 
 - **SPL是什么?**
