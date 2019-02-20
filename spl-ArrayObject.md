@@ -119,7 +119,6 @@ abbrlink: 7817fbb9
 			无输入
 		- :array
 			返回转化的数组
-<<<<<<< HEAD
 	- setFlags ( int $flags ) : void
 		- 作用
 			设置ArrayObject行为
@@ -231,6 +230,4 @@ abbrlink: 7817fbb9
 	----------
 
 > 如有不妥之处，敬请留言回复以便更正，防止误导他人；漫漫码路，与君共勉！转载请注明
-=======
-	
->>>>>>> ea750f3e1ba7d18180bc716eebd4835a2e96489c
+
