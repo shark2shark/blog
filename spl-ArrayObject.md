@@ -126,42 +126,42 @@ abbrlink: 7817fbb9
 			$flags值为```ArrayObject::STD_PROP_LIST```或```ArrayObject::ARRAY_AS_PROPS```
 			 - 当为```ArrayObject::STD_PROP_LIST```时,博主暂时没有理解这个常熟的行为,文档中的解释是错误的,有哪位大佬清楚的话烦请评论告知,万分感谢
 			 - 当为```ArrayObject::ARRAY_AS_PROPS```,表示以对象属性形式(->)设置的值将会更新到元素中,比如
-			 ```php
-			 $array = [
-				'item1' => 'hello',
-				'item2' => 'world'
-			];
-			$arrayObject = new ArrayObject($array);
-			$arrayObject->setFlags(ArrayObject::ARRAY_AS_PROPS);
-			$arrayObject->item3 = 'php';
-			$arrayObject['itme4'] = 'spl';
-			var_dump($arrayObject->getArrayCopy());
-			
-			$newArrayObject = new ArrayObject($array);
-			$newArrayObject->item3 = 'php';
-			$newArrayObject['itme4'] = 'spl';
-			var_dump($newArrayObject->getArrayCopy());
-			//output
-			array(4) {
-			  ["item1"]=>
-			  string(5) "hello"
-			  ["item2"]=>
-			  string(5) "world"
-			  ["item3"]=>
-			  string(3) "php"
-			  ["itme4"]=>
-			  string(3) "spl"
-			}
-			array(3) {
-			  ["item1"]=>
-			  string(5) "hello"
-			  ["item2"]=>
-			  string(5) "world"
-			  ["itme4"]=>
-			  string(3) "spl"
-			}
+				 ```php
+				 $array = [
+					'item1' => 'hello',
+					'item2' => 'world'
+				];
+				$arrayObject = new ArrayObject($array);
+				$arrayObject->setFlags(ArrayObject::ARRAY_AS_PROPS);
+				$arrayObject->item3 = 'php';
+				$arrayObject['itme4'] = 'spl';
+				var_dump($arrayObject->getArrayCopy());
 
-			 ```
+				$newArrayObject = new ArrayObject($array);
+				$newArrayObject->item3 = 'php';
+				$newArrayObject['itme4'] = 'spl';
+				var_dump($newArrayObject->getArrayCopy());
+				//output
+				array(4) {
+				  ["item1"]=>
+				  string(5) "hello"
+				  ["item2"]=>
+				  string(5) "world"
+				  ["item3"]=>
+				  string(3) "php"
+				  ["itme4"]=>
+				  string(3) "spl"
+				}
+				array(3) {
+				  ["item1"]=>
+				  string(5) "hello"
+				  ["item2"]=>
+				  string(5) "world"
+				  ["itme4"]=>
+				  string(3) "spl"
+				}
+
+				 ```
 		- void
 			无返回
 	- getFlags ( void ) : int
