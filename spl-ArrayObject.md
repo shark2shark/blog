@@ -126,7 +126,7 @@ abbrlink: 7817fbb9
 			$flags有两个选项:
 			- 当为```ArrayObject::STD_PROP_LIST```时,博主暂时没有理解这个常熟的行为,文档中的解释是错误的,有哪位大佬清楚的话烦请评论告知,万分感谢
 			- 当为```ArrayObject::ARRAY_AS_PROPS```,表示以对象属性形式(->)设置的值将会更新到元素中,比如
-				
+			<br />	
 				```php
 				 $array = [
 					'item1' => 'hello',
