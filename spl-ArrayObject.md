@@ -118,4 +118,114 @@ tags:
 			无输入
 		- :array
 			返回转化的数组
+	- setFlags ( int $flags ) : void
+		- 作用
+			设置ArrayObject行为
+		- $flags
+			$flags值为```ArrayObject::STD_PROP_LIST```或```ArrayObject::ARRAY_AS_PROPS```
+			 - 当为```ArrayObject::STD_PROP_LIST```时,博主暂时没有理解这个常熟的行为,文档中的解释是错误的,有哪位大佬清楚的话烦请评论告知,万分感谢
+			 - 当为```ArrayObject::ARRAY_AS_PROPS```,表示以对象属性形式(->)设置的值将会更新到元素中,比如
+			 ```php
+			 $array = [
+				'item1' => 'hello',
+				'item2' => 'world'
+			];
+			$arrayObject = new ArrayObject($array);
+			$arrayObject->setFlags(ArrayObject::ARRAY_AS_PROPS);
+			$arrayObject->item3 = 'php';
+			$arrayObject['itme4'] = 'spl';
+			var_dump($arrayObject->getArrayCopy());
+			
+			$newArrayObject = new ArrayObject($array);
+			$newArrayObject->item3 = 'php';
+			$newArrayObject['itme4'] = 'spl';
+			var_dump($newArrayObject->getArrayCopy());
+			//output
+			array(4) {
+			  ["item1"]=>
+			  string(5) "hello"
+			  ["item2"]=>
+			  string(5) "world"
+			  ["item3"]=>
+			  string(3) "php"
+			  ["itme4"]=>
+			  string(3) "spl"
+			}
+			array(3) {
+			  ["item1"]=>
+			  string(5) "hello"
+			  ["item2"]=>
+			  string(5) "world"
+			  ["itme4"]=>
+			  string(3) "spl"
+			}
+
+			 ```
+		- void
+			无返回
+	- getFlags ( void ) : int
+		- 作用
+			得到设置的行为
+		- void
+			无输入
+		- :int
+			设置的行为(没有设置=>0或```ArrayObject::STD_PROP_LIST```=>1或```ArrayObject::ARRAY_AS_PROPS```=>2)
+	- getIterator ( void ) : ArrayIterator
+		- 作用
+			从ArrayObject创建一个新的迭代器对象
+		- void
+			无输入
+		- : ArrayIterator
+			返回新创建的迭代器对象
+	- getIteratorClass ( void ) : string
+		- 作用
+			返回ArrayObject所实现的迭代器类
+		- void
+			无输入
+		- :string
+			返回ArrayObject所实现的迭代器类名称
+	- setIteratorClass ( string $iterator_class ) : void
+		- 作用
+			替换ArrayObject的迭代器类
+		- $iterator_class
+			合法的迭代器类名称(字符串)
+		- :void
+			无返回值
+	- offsetExists ( mixed $index ) : bool
+		- 作用
+			判断元素键是否存在
+		- $index
+			传入的键
+		- :bool
+			结果true|false
+	- offsetGet ( mixed $index ) : mixed
+		- 作用
+			得到制定键的值
+		- $index
+			指定的键
+		- :mixed
+			返回的值
+	- offsetSet ( mixed $index , mixed $newval ) : void
+		- 作用
+			设置一个键,存在则覆盖
+		- $index
+			键
+		- $newval
+			值
+		- :void
+			无返回
+	- offsetUnset ( mixed $index ) : void
+		- 作用
+			删除一个制定的键
+		- $index
+			删除的键
+		- :void
+			无返回
+	- unserialize ( string $serialized ) : void
+		- 这个函数吧,文档没说注释,我尝试了好久也是没找到它存在的意义.
+- 应用场景
+	ArrayObject一般用于框架的基础结构的数组工具集或Orm的实现中,我们常见的Laravel和Tp5框架,其model是基于ArrayAccess(ArrayObject也实现了它)实现的,而swoole扩展的框架新秀easyswoole其sql库中的SplArray工具就是继承了ArrayObject后实现的,其实我们也可以通过魔术方法```__call()```在ArrayObject的实现中直接去调用现有的所有数组方法都是没问题的,关键还是在于思路和基础知识的掌握程度,由于PHP官方文档的表达程度和一定的错误率导致多数高阶php功能都被雪藏确实挺遗憾的,所以博主建议大家多多研究下文档并动手实践,从而使你对这门语言的掌握程度更加明朗.
 	
+	----------
+
+> 如有不妥之处，敬请留言回复以便更正，防止误导他人；漫漫码路，与君共勉！转载请注明
