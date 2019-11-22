@@ -1,17 +1,17 @@
 ---
-Title: jsonRpc
-Date: '2019-11-22 15:24'
-Keywords:
-	- rpc
-	- jsonRpc
-Description: jsonRpc是一种轻量级的rpc规范...
-Categories:
-	- rpc
-	- concept
-Tags:
-	- rpc
-	- jsonRpc
-Abbrlink: 889b044c
+title: jsonRpc
+date: '2019-11-22 15:24'
+keywords:
+  - rpc
+  - jsonRpc
+description: jsonRpc是一种轻量级的rpc规范...
+categories:
+  - rpc
+  - concept
+tags:
+  - rpc
+  - jsonRpc
+abbrlink: '0'
 ---
 
 
