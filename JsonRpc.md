@@ -11,14 +11,11 @@ categories:
 tags:
   - rpc
   - jsonRpc
-abbrlink: '0'
+abbrlink: '889b044c'
+
 ---
 
-
-
-
-
-介绍**
+**介绍**
 
 jsonRpc是rpc协议的一种规范，主要定义了数据结构及其相关的处理规则，此规则允许运行在基于socket，http等诸多不同消息传输环境的同一进程中,使用json作为通信载体
 
